@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Camera Access</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Popup overlay */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #popup {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 36px 32px;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+    }
+
+    #popup .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    #popup h2 {
+      color: #fff;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    #popup p {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    #popup button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    #allowBtn {
+      background: #4f8ef7;
+      color: #fff;
+    }
+
+    #allowBtn:hover { background: #3a78e0; }
+
+    #denyBtn {
+      background: #2a2a2a;
+      color: #888;
+    }
+
+    #denyBtn:hover { background: #333; }
+
+    /* Camera view */
+    #cameraSection {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    video {
+      width: 100%;
+      max-width: 640px;
+      border-radius: 16px;
+      border: 2px solid #333;
+      background: #000;
+    }
+
+    #stopBtn {
+      padding: 10px 28px;
+      background: #e24b4a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #stopBtn:hover { background: #c73b3a; }
+
+    #statusLabel {
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    /* Denied message */
+    #deniedMsg {
+      display: none;
+      color: #e24b4a;
+      font-size: 15px;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Permission Popup -->
+  <div id="overlay">
+    <div id="popup">
+      <div class="icon">📷</div>
+      <h2>Camera Permission Required</h2>
+      <p>This page would like to access your camera. Your video will only be shown on your screen and will not be recorded or shared.</p>
+      <button id="allowBtn" onclick="requestCamera()">Allow Camera Access</button>
+      <button id="denyBtn" onclick="denyAccess()">No Thanks</button>
+    </div>
+  </div>
+
+  <!-- Camera Feed -->
+  <div id="cameraSection">
+    <p id="statusLabel">📷 Camera is active</p>
+    <video id="videoEl" autoplay playsinline muted></video>
+    <button id="stopBtn" onclick="stopCamera()">Stop Camera</button>
+  </div>
+
+  <!-- Denied -->
+  <div id="deniedMsg">
+    ❌ Camera access was denied. You can enable it from your browser settings.
+  </div>
+
+  <script>
+    let stream = null;
+
+    async function requestCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('cameraSection').style.display = 'flex';
+        document.getElementById('videoEl').srcObject = stream;
+      } catch (err) {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('deniedMsg').style.display = 'block';
+        console.error('Camera error:', err);
+      }
+    }
+
+    function denyAccess() {
+      document.getElementById('overlay').style.display = 'none';
+      document.getElementById('deniedMsg').style.display = 'block';
+      document.getElementById('deniedMsg').textContent = 'You chose not to allow camera access.';
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      document.getElementById('cameraSection').style.display = 'none';
+      document.getElementById('deniedMsg').style.display = 'block';
+      document.getElementById('deniedMsg').style.color = '#aaa';
+      document.getElementById('deniedMsg').textContent = '✅ Camera stopped.';
+    }
+  </script>
+
+</body>
+</html>

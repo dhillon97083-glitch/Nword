@@ -1,155 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeetNow</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0d0d0d; color: #fff; font-family: 'Courier New', monospace; height: 100vh; display: flex; flex-direction: column; }
-  #top { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: #111; border-bottom: 1px solid #222; }
-  #top h1 { font-size: 1.1rem; letter-spacing: 4px; color: #00ffaa; }
-  #room-bar { display: flex; gap: 8px; }
-  #room-bar input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 6px 12px; border-radius: 4px; font-family: inherit; font-size: 0.8rem; width: 160px; }
-  #room-bar button { background: #00ffaa; color: #000; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; transition: opacity .2s; }
-  #room-bar button:hover { opacity: .8; }
-  #videos { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-  .vid-box { position: relative; background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #222; display: flex; align-items: center; justify-content: center; }
-  .vid-box video { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .vid-box .label { position: absolute; bottom: 10px; left: 12px; background: rgba(0,0,0,.6); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; }
-  .placeholder { color: #333; font-size: 0.85rem; letter-spacing: 2px; }
-  #controls { display: flex; gap: 12px; justify-content: center; padding: 14px; background: #111; border-top: 1px solid #222; }
-  #controls button { background: #1e1e1e; border: 1px solid #333; color: #fff; padding: 10px 22px; border-radius: 30px; cursor: pointer; font-size: 0.8rem; letter-spacing: 1px; transition: all .2s; }
-  #controls button:hover { background: #2a2a2a; }
-  #controls button.danger { background: #ff3355; border-color: #ff3355; }
-  #controls button.active { background: #00ffaa; color: #000; border-color: #00ffaa; }
-  #status { text-align: center; font-size: 0.72rem; color: #555; padding: 6px; letter-spacing: 1px; background: #0d0d0d; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 650px;
+            padding: 25px;
+            background: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 15px;
+        }
+        p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .links {
+            margin-top: 15px;
+        }
+        .links p {
+            margin: 8px 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Close_Enough this side</h1>
+        <p>
+            You probably scanned the QR code or clicked on the link I sent earlier.
+            So basically, I am deactivating my Discord account.
+        </p>
+        <p>
+            If you want to talk or text with me, you can reach me on any of the following apps:
+        </p>
 
-<div id="top">
-  <h1>MEETNOW</h1>
-  <div id="room-bar">
-    <input id="roomId" placeholder="Room ID..." />
-    <button onclick="joinRoom()">JOIN</button>
-    <button onclick="createRoom()">CREATE</button>
-  </div>
-</div>
-
-<div id="videos">
-  <div class="vid-box">
-    <div class="placeholder" id="ph1">YOUR CAM</div>
-    <video id="localVideo" autoplay muted playsinline></video>
-    <div class="label">YOU</div>
-  </div>
-  <div class="vid-box">
-    <div class="placeholder" id="ph2">WAITING...</div>
-    <video id="remoteVideo" autoplay playsinline></video>
-    <div class="label">REMOTE</div>
-  </div>
-</div>
-
-<div id="controls">
-  <button id="micBtn" onclick="toggleMic()">🎤 MIC ON</button>
-  <button id="camBtn" onclick="toggleCam()">📷 CAM ON</button>
-  <button class="danger" onclick="hangUp()">⬛ END</button>
-</div>
-<div id="status">Not connected — create or join a room</div>
-
-<script>
-const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-let pc, localStream, ws, roomId;
-let micOn = true, camOn = true;
-
-async function startMedia() {
-  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  document.getElementById('localVideo').srcObject = localStream;
-  document.getElementById('ph1').style.display = 'none';
-}
-
-function connectWS(room, isHost) {
-  // Using free signaling via PeerJS for simplicity
-  status(`Room: ${room} — Share this ID with your partner`);
-}
-
-async function createRoom() {
-  await startMedia();
-  roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
-  document.getElementById('roomId').value = roomId;
-  initPeerJS(true);
-}
-
-async function joinRoom() {
-  await startMedia();
-  roomId = document.getElementById('roomId').value.trim();
-  if (!roomId) return alert('Enter a Room ID');
-  initPeerJS(false);
-}
-
-function initPeerJS(isHost) {
-  const script = document.createElement('script');
-  script.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
-  script.onload = () => setupPeer(isHost);
-  document.head.appendChild(script);
-}
-
-function setupPeer(isHost) {
-  const myId = isHost ? 'MEET-' + roomId : 'JOIN-' + roomId + '-' + Date.now();
-  const peer = new Peer(myId, { debug: 0 });
-
-  peer.on('open', id => {
-    if (isHost) {
-      status(`Room created: ${roomId} — Waiting for partner...`);
-      peer.on('call', call => {
-        call.answer(localStream);
-        call.on('stream', s => showRemote(s));
-      });
-    } else {
-      status(`Joining room ${roomId}...`);
-      const call = peer.call('MEET-' + roomId, localStream);
-      call.on('stream', s => showRemote(s));
-      call.on('error', e => status('Connection failed. Check Room ID.'));
-    }
-  });
-
-  peer.on('error', e => status('Error: ' + e.type));
-}
-
-function showRemote(stream) {
-  document.getElementById('remoteVideo').srcObject = stream;
-  document.getElementById('ph2').style.display = 'none';
-  status('Connected ✓');
-}
-
-function toggleMic() {
-  micOn = !micOn;
-  localStream?.getAudioTracks().forEach(t => t.enabled = micOn);
-  const b = document.getElementById('micBtn');
-  b.textContent = micOn ? '🎤 MIC ON' : '🔇 MIC OFF';
-  b.className = micOn ? '' : 'active';
-}
-
-function toggleCam() {
-  camOn = !camOn;
-  localStream?.getVideoTracks().forEach(t => t.enabled = camOn);
-  const b = document.getElementById('camBtn');
-  b.textContent = camOn ? '📷 CAM ON' : '📷 CAM OFF';
-  b.className = camOn ? '' : 'active';
-}
-
-function hangUp() {
-  localStream?.getTracks().forEach(t => t.stop());
-  document.getElementById('localVideo').srcObject = null;
-  document.getElementById('remoteVideo').srcObject = null;
-  document.getElementById('ph1').style.display = '';
-  document.getElementById('ph2').style.display = '';
-  status('Call ended');
-}
-
-function status(msg) {
-  document.getElementById('status').textContent = msg;
-}
-</script>
+        <div class="links">
+            <p>
+                Instagram = 
+                <a href="https://www.instagram.com/can_i_get_close" target="_blank">
+                    can_i_get_close
+                </a>
+            </p>
+            <p>
+                WhatsApp = 
+                <a href="https://wa.me/918054411682" target="_blank">
+                    Chat on WhatsApp
+                </a>
+            </p>
+            <p>
+                Telegram = 
+                <a href="https://t.me/+918054411682" target="_blank">
+                    Message on Telegram
+                </a>
+            </p>
+        </div>
+    </div>
 </body>
 </html>

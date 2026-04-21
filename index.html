@@ -3,80 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Info</title>
+    <title>Important Proposal 💼</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            max-width: 650px;
-            padding: 25px;
-            background: #1e293b;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #74ebd5, #9face6);
             text-align: center;
+            color: #333;
+            padding-top: 100px;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
         h1 {
-            margin-bottom: 15px;
+            color: #ff4b5c;
         }
-        p {
-            margin: 10px 0;
-            line-height: 1.5;
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
         }
-        a {
-            color: #38bdf8;
-            text-decoration: none;
-            font-weight: bold;
+        .yes {
+            background-color: #4CAF50;
+            color: white;
         }
-        a:hover {
-            text-decoration: underline;
-        }
-        .links {
-            margin-top: 15px;
-        }
-        .links p {
-            margin: 8px 0;
+        .no {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Close_Enough this side</h1>
-        <p>
-            You probably scanned the QR code or clicked on the link I sent earlier.
-            So basically, I am deactivating my Discord account.
-        </p>
-        <p>
-            If you want to talk or text with me, you can reach me on any of the following apps:
-        </p>
 
-        <div class="links">
-            <p>
-                Instagram = 
-                <a href="https://www.instagram.com/can_i_get_close" target="_blank">
-                    can_i_get_close
-                </a>
-            </p>
-            <p>
-                WhatsApp = 
-                <a href="https://wa.me/918054411682" target="_blank">
-                    Chat on WhatsApp
-                </a>
-            </p>
-            <p>
-                Telegram = 
-                <a href="https://t.me/+918054411682" target="_blank">
-                    Message on Telegram
-                </a>
-            </p>
-        </div>
-    </div>
+<div class="box">
+    <h1>💼 Important Proposal 💼</h1>
+    <p>Dear Friend,</p>
+    <p>Will you finally get a job and stop being broke? 😭</p>
+
+    <button class="yes" onclick="accept()">YES 😎</button>
+    <button class="no" onmouseover="moveButton()">NO 😭</button>
+</div>
+
+<script>
+    function accept() {
+        alert("Great! Welcome to the working class 😂💼");
+    }
+
+    function moveButton() {
+        const btn = document.querySelector('.no');
+        btn.style.top = Math.random() * window.innerHeight + "px";
+        btn.style.left = Math.random() * window.innerWidth + "px";
+    }
+</script>
+
 </body>
 </html>
